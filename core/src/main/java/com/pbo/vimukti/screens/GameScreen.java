@@ -5,12 +5,22 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.pbo.vimukti.MainGame;
 import com.badlogic.gdx.graphics.Texture;
+import com.pbo.vimukti.entities.Player;
+import com.pbo.vimukti.input.InputManager;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameScreen implements Screen {
     private MainGame game;
     private Texture tes;
+    private Player player;
+    private InputManager input ;
+    private SpriteBatch batch;
+
     public GameScreen(MainGame game) {
         this.game = game;
+        this.player=new Player();
+        this.input = new InputManager(player);
+        this.batch=game.batch;
     }
     @Override
     public void show(){
@@ -18,12 +28,20 @@ public class GameScreen implements Screen {
     }
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0.2f, 0, 1);
+        update(delta);
+        draw();
+    }
+    public void update(float delta){
+        input.handleInput(delta);
+        player.update(delta);
+    }
+    public void draw (){
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game.batch.begin();
-        game.batch.draw(tes, 100, 100, 64, 64);
-        game.batch.end();
+        batch.begin();
+        player.render(batch); // gambar player
+        batch.end();
     }
 
     // Sisanya override kosong dulu
@@ -33,5 +51,6 @@ public class GameScreen implements Screen {
     public void resume() {}
     public void dispose() {
         tes.dispose();
+        player.dispose();
     }
 }
