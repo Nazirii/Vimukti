@@ -15,6 +15,8 @@ public class Player {
     Texture sheet;
     TextureRegion[] walkFrames;
     Animation<TextureRegion> walkAnim;
+    private boolean hadapkanan=true;
+
 
     public Player() {
 
@@ -34,7 +36,13 @@ public class Player {
     }
     public void render(SpriteBatch batch) {
         TextureRegion frame = walkAnim.getKeyFrame(stateTime, true);
-        batch.draw(frame, x, y);
+        TextureRegion frame_new = new TextureRegion(frame);
+
+        if (!hadapkanan) {
+            frame_new.flip(true, false);
+        }
+
+        batch.draw(frame_new, x, y);
 
     }
     public void update(float delta){
@@ -48,7 +56,9 @@ public class Player {
     public void move(float dx, float dy) {
         x += dx;
         y += dy;
-        isMoving = dx != 0 || dy != 0;
+        if (dx > 0) hadapkanan = true;
+        else if (dx < 0) hadapkanan = false;
+
     }
     public void setMoving(boolean isMoving){
         this.isMoving=isMoving;

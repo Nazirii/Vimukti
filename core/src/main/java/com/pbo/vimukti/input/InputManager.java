@@ -27,15 +27,8 @@ public class InputManager {
             isMoving=true;
 
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.move(0, speed * delta);
-            isMoving=true;
 
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.move(0, -speed * delta);
-            isMoving=true;
-        }
+
         player.setMoving(isMoving);
     }
 }
