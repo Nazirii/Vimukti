@@ -18,6 +18,8 @@ public class InputManager {
     public void handleInput(float delta) {
         boolean isMoving=false;
         boolean isJump=false;
+        boolean isHit = false;
+
         float speed = player.getSpeed();
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             player.move(-speed * delta, 0);
@@ -30,6 +32,10 @@ public class InputManager {
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             player.jump();
             isJump=true;
+
+        }
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+            player.hit();
 
         }
 

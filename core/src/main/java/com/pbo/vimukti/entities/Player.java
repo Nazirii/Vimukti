@@ -21,6 +21,7 @@ public class Player {
     private boolean isMoving=false;
     private boolean isJump=false;
     private boolean hadapkanan=true;
+    private boolean isHit = false;
     //animasi
         //jalan
     Texture walk;
@@ -30,7 +31,10 @@ public class Player {
     Texture jump;
     TextureRegion[] jumpFrames;
     Animation<TextureRegion> jumpAnim;
-
+        //serang
+    Texture hit;
+    TextureRegion[] hitFrames;
+    Animation<TextureRegion> hitAnim;
 
     public Player() {
 
@@ -52,7 +56,17 @@ public class Player {
             jumpFrames[i] = tmpj[0][i];
         }
         jumpAnim = new Animation<TextureRegion>(0.1f, jumpFrames);
+        //set animasi hit
+        hit = new Texture("hit.png");
+        TextureRegion[][] tmph = TextureRegion.split(hit,64,64);
+        hitFrames=new TextureRegion[8];
+        for (int i = 0; i < 8; i++) {
+            hitFrames[i] = tmph[0][i];
+        }
+        hitAnim = new Animation<TextureRegion>(0.03f,hitFrames);
         stateTime = 0f;
+
+
     }
     public float getSpeed() {
         return speed;
@@ -60,8 +74,16 @@ public class Player {
     public void render(SpriteBatch batch) {
         TextureRegion frame = walkAnim.getKeyFrame(stateTime, true);
         TextureRegion jumpFrame = jumpAnim.getKeyFrame(stateTime, false);
+        TextureRegion hitFrame = hitAnim.getKeyFrame(stateTime,true);
 
-        if (isJump) {
+        if(isHit){
+            frame=hitAnim.getKeyFrame(stateTime,true);;
+            if (isHit && hitAnim.isAnimationFinished(stateTime)) {
+                isHit = false;
+                stateTime = 0f;
+            }
+            }
+        else if (isJump) {
             frame = jumpFrame;
             if (jumpAnim.isAnimationFinished(stateTime) && onGround) {
                 isJump = false; // Reset status lompat
@@ -81,7 +103,7 @@ public class Player {
     public void update(float delta){
 
     //cek lagi gerak atau ga//logic jalan
-        if (isMoving || isJump) {
+        if (isMoving || isJump || isHit) {
             stateTime += delta;
         } else {
             stateTime = 0; // kembali ke frame pertama saat diam
@@ -111,6 +133,7 @@ public class Player {
     public void setMoving(boolean isMoving,boolean isJump){
         this.isMoving=isMoving;
         this.isJump=isJump;
+
     }
     public void jump(){
         if (onGround) {
@@ -120,8 +143,15 @@ public class Player {
             stateTime = 0f;
         }
     }
+    public void hit(){
+        isHit=true;
+        stateTime=0f;
+    }
     public void dispose() {
+
         walk.dispose();
+        jump.dispose();
+        hit.dispose();
     }
 }
 
