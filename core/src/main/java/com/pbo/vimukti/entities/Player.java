@@ -5,12 +5,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Player {
     //atribut dasar player
     private float speed = 200f;
     public float x, y;
     private float jumpSpeed = 500f;
+    float playerHP ;
+    float invincibilityTime ;
+    private  boolean isinvincible;
     //kedaan/status game/frame
     float stateTime;
     private float gravity = 1000f;
@@ -22,6 +26,7 @@ public class Player {
     private boolean isJump=false;
     private boolean hadapkanan=true;
     private boolean isHit = false;
+    public  boolean isKnockedback=false;
     //animasi
         //jalan
     Texture walk;
@@ -35,9 +40,15 @@ public class Player {
     Texture hit;
     TextureRegion[] hitFrames;
     Animation<TextureRegion> hitAnim;
+        // knockback
+    float velocityX = 0;
+    float knockbackPower = 500f;
+
 
     public Player() {
-
+        playerHP=200;
+        invincibilityTime=0f;
+        isinvincible=false;
         x = 100;
         y = 100;
         //set animasi jalan
@@ -96,12 +107,21 @@ public class Player {
         if (!hadapkanan) {
             frame_new.flip(true, false);
         }
+        if (isInvincible()) {
+            float alpha = 0.5f + 0.5f * (float)Math.sin(10 * stateTime); // alpha bolak-balik dari 0 ke 1
+            batch.setColor(1, 1, 1, alpha);
+        } else {
+            batch.setColor(1, 1, 1, 1f);
+        }
 
         batch.draw(frame_new, x, y);
+        batch.setColor(1, 1, 1, 1f);
 
     }
     public void update(float delta){
-
+        //cek lagi immune setelah dibacok
+        if (invincibilityTime > 0f)
+            invincibilityTime -= delta;
     //cek lagi gerak atau ga//logic jalan
         if (isMoving || isJump || isHit) {
             stateTime += delta;
@@ -120,6 +140,15 @@ public class Player {
                 y = groundY;
                 onGround = true;
                 velocityY = 0;
+            }
+        }
+        //logic dibacok
+        if (isKnockedback) {
+            x += velocityX * delta;
+            velocityX *= 0.9f;
+            // stop knockback kalau sudah cukup lambat
+            if (Math.abs(velocityX) < 5f) {
+                velocityX = 0;
             }
         }
 
@@ -147,6 +176,32 @@ public class Player {
         isHit=true;
         stateTime=0f;
     }
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, 64, 64);
+    }
+    public boolean isHitting(){
+        return isHit;
+    }
+
+    public void getHitFromEnemy(BaseEnemies enemy) {
+        if (!isInvincible()) {
+            System.out.println("Player kena hit oleh musuh dengan damage: " + enemy.damage);
+            playerHP -= enemy.damage;
+            invincibilityTime = 1.0f; // 1 detik nggak bisa kena hit lagi
+            System.out.println("Player kena hit! Sisa HP: " + playerHP);
+            if (x > enemy.x) {velocityX = knockbackPower; }  // dorong ke kanan
+            else {velocityX = -knockbackPower;}
+            isKnockedback=true;
+
+
+        }
+
+    }
+    public boolean isInvincible(){
+        return invincibilityTime>0f;
+    }
+
+
     public void dispose() {
 
         walk.dispose();
