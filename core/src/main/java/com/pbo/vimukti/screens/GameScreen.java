@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.pbo.vimukti.MainGame;
 import com.badlogic.gdx.graphics.Texture;
+import com.pbo.vimukti.entities.Golem;
 import com.pbo.vimukti.entities.Player;
 import com.pbo.vimukti.entities.BaseEnemies;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import com.pbo.vimukti.entities.Worm;
 import com.pbo.vimukti.input.InputManager;
@@ -28,6 +30,7 @@ public class GameScreen implements Screen {
         this.input = new InputManager(player);
         this.batch=game.batch;
         enemies.add(new Worm());
+        enemies.add(new Golem());
     }
     @Override
     public void show(){
@@ -57,6 +60,9 @@ public class GameScreen implements Screen {
             enemy.render(batch);
         }
         batch.end();
+//        for(BaseEnemies enemy:enemies){
+//            enemy.debugdraw(new ShapeRenderer());
+//        }
     }
     public void battlehandler(Player player ,Array<BaseEnemies> enemies){
         for (BaseEnemies enemy : enemies){
@@ -65,9 +71,9 @@ public class GameScreen implements Screen {
                 if (player.isHitting()) {
                 enemy.gethit(player.x);
             }
-                if (enemy.isAlive() && enemy.isAttacking() && !enemy.isHashit()){
-                            player.getHitFromEnemy(enemy);
-                            enemy.setishit(true);
+                if ( enemy.isAttacking() && enemy.isHashit()){
+                    player.getHitFromEnemy(enemy);
+                    enemy.setishit(true);
 
                 }
 

@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
-public class Worm extends BaseEnemies {
+public class Golem extends BaseEnemies {
     //frame
     public float scale;
     //atribut
@@ -58,47 +58,47 @@ public class Worm extends BaseEnemies {
     TextureRegion[] attackFrames;
     Animation<TextureRegion> attackAnim;
 
-    public Worm() {
-        scale=2.0f;
-        hp=150;
-        damage=100;
-        x = 100;
+    public Golem() {
+        scale=3.0f;
+        hp=300;
+        damage=300;
+        x = 150;
         y = 100;
-        speed=100f;
+        speed=50f;
         //set animasi jalan
-        walk = new Texture("Worm/walk.png");
+        walk = new Texture("Golem/Golem_1_walk.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 90, 64);
-        walkFrames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
+        walkFrames = new TextureRegion[10];
+        for (int i = 0; i < 10; i++) {
             walkFrames[i] = tmpw[0][i];
         }
         walkAnim = new Animation<TextureRegion>(0.1f, walkFrames);
 
         //set animasi hit
-        gethit = new Texture("Worm/GetHit.png");
+        gethit = new Texture("Golem/Golem_1_hurt.png");
         TextureRegion[][] tmpg = TextureRegion.split(gethit,90,64);
-        gethitFrames=new TextureRegion[3];
-        for (int i = 0; i < 3; i++) {
+        gethitFrames=new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
             gethitFrames[i] = tmpg[0][i];
         }
         gethitAnim = new Animation<TextureRegion>(0.15f,gethitFrames);
 
         //set animasi dead
-        dead = new Texture("Worm/Death.png");
+        dead = new Texture("Golem/Golem_1_die.png");
         TextureRegion[][] tmpd = TextureRegion.split(dead,90,64);
-        deadFrames=new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
+        deadFrames=new TextureRegion[12];
+        for (int i = 0; i < 12; i++) {
             deadFrames[i] = tmpd[0][i];
         }
         deadAnim = new Animation<TextureRegion>(0.1f,deadFrames);
         //set animasi attack
-        attack = new Texture("Worm/Attack.png");
+        attack = new Texture("Golem/Golem_1_attack.png");
         TextureRegion[][] tmpat = TextureRegion.split(attack,90,64);
-        attackFrames=new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            attackFrames[i] = tmpat[0][i+8];
+        attackFrames=new TextureRegion[11];
+        for (int i = 0; i < 11; i++) {
+            attackFrames[i] = tmpat[0][i];
         }
-        attackAnim= new Animation<TextureRegion>(0.1f,attackFrames);
+        attackAnim= new Animation<TextureRegion>(0.15f,attackFrames);
 
     }
     public float getSpeed() {
@@ -129,7 +129,9 @@ public class Worm extends BaseEnemies {
             frame_new.flip(true, false);
         }
 
-        batch.draw(frame_new, x, y);
+        float drawX = x - (frame_new.getRegionWidth() * scale) / 2f;
+        float drawY = y;
+        batch.draw(frame_new, drawX, drawY,frame_new.getRegionWidth()*scale,frame_new.getRegionHeight()*scale);
 
     }
     public void update(float delta,float player_x){
@@ -175,7 +177,7 @@ public class Worm extends BaseEnemies {
         //nyerang
         // Jarak serang
         float distanceToPlayer = Math.abs(player_x - x);
-        if (distanceToPlayer < 30f && attackCooldown <= 0f && isalive && !isAttacking) {
+        if (distanceToPlayer < 40f && attackCooldown <= 0f && isalive && !isAttacking) {
             isAttacking = true;
             hashit=false;
             stateTime=0f;
@@ -183,7 +185,7 @@ public class Worm extends BaseEnemies {
         }
         if(isAttacking){
             stateTime+=delta;
-            if (getHit && attackAnim.getKeyFrameIndex(stateTime) < 6) {
+            if (getHit && attackAnim.getKeyFrameIndex(stateTime) < 7) {
                 // Batalkan animasi serang
                 isAttacking = false;
                 hashit = false;
@@ -192,7 +194,7 @@ public class Worm extends BaseEnemies {
                 System.out.println("anjay nangkis");
                 return;
             }
-            if (attackAnim.getKeyFrameIndex(stateTime)==6 ){
+            if (attackAnim.getKeyFrameIndex(stateTime)==7 ){
                 hashit=true;
             }
             if(attackAnim.isAnimationFinished(stateTime)){
@@ -233,7 +235,11 @@ public class Worm extends BaseEnemies {
 
     }
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 60, 40);
+        // offsetX itu jarak dari titik anchor tengah bawah ke posisi kiri bawah hitbox (dalam pixel sprite asli)
+        float hitboxOffsetX = (90/2f - 55/2f) * scale; // contoh, hitbox dibuat simetris di tengah sprite
+        float hitboxOffsetY = 0; // karena anchor di bawah, hitbox mulai dari y
+
+        return new Rectangle(x - hitboxOffsetX, y + hitboxOffsetY, 35 * scale, 40 * scale);
     }
     public boolean isAttacking() {
         return isAttacking;
@@ -255,8 +261,7 @@ public class Worm extends BaseEnemies {
     public boolean isAlive() {
         return isalive;
     }
-    @Override
-    public void debugdraw(ShapeRenderer shapeRenderer){
+    public void debugdraw(ShapeRenderer shapeRenderer) {
         if (isDeadFinished) return;
 
         Rectangle bounds = getBounds();
@@ -265,7 +270,7 @@ public class Worm extends BaseEnemies {
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
         shapeRenderer.end();
-    };
+    }
     public void dispose() {
 
         walk.dispose();

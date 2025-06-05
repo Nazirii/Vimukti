@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public abstract  class BaseEnemies {
     protected float speed;
@@ -23,4 +24,5 @@ public abstract  class BaseEnemies {
     public abstract boolean isHashit();
     public abstract void setishit(boolean value);
     public abstract float getStateTime();
+    public abstract void debugdraw(ShapeRenderer shapeRenderer);
 }
