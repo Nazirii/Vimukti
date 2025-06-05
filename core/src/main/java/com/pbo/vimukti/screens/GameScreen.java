@@ -65,9 +65,13 @@ public class GameScreen implements Screen {
                 if (player.isHitting()) {
                 enemy.gethit(player.x);
             }
-            if (enemy.isAlive() && enemy.getBounds().overlaps(player.getBounds()) && !player.isInvincible()) {
-                player.getHitFromEnemy(enemy); // logika untuk terima damage
-        }
+                if (enemy.isAlive() && enemy.isAttacking() && !enemy.isHashit()){
+                            player.getHitFromEnemy(enemy);
+                            enemy.setishit(true);
+
+                }
+
+
             }
     }
 }

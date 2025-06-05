@@ -19,4 +19,8 @@ public abstract  class BaseEnemies {
     public abstract Rectangle getBounds();
     public boolean isAlive() { return isAlive; }
     public abstract void dispose();
+    public abstract boolean isAttacking();
+    public abstract boolean isHashit();
+    public abstract void setishit(boolean value);
+    public abstract float getStateTime();
 }

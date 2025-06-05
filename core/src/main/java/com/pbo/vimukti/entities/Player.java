@@ -27,6 +27,7 @@ public class Player {
     private boolean hadapkanan=true;
     private boolean isHit = false;
     public  boolean isKnockedback=false;
+    private boolean isGettingHit = false;
     //animasi
         //jalan
     Texture walk;
@@ -40,6 +41,10 @@ public class Player {
     Texture hit;
     TextureRegion[] hitFrames;
     Animation<TextureRegion> hitAnim;
+        //gethit
+    Texture gethit;
+    TextureRegion[] getHitFrames;
+    Animation<TextureRegion> getHitAnim;
         // knockback
     float velocityX = 0;
     float knockbackPower = 500f;
@@ -75,6 +80,14 @@ public class Player {
             hitFrames[i] = tmph[0][i];
         }
         hitAnim = new Animation<TextureRegion>(0.03f,hitFrames);
+        //set animasi gethit
+        gethit = new Texture("Gethit.png");
+        TextureRegion[][] tmpgh = TextureRegion.split(gethit,64,64);
+        getHitFrames=new TextureRegion[6];
+        for (int i = 0; i < 6; i++) {
+            getHitFrames[i] = tmpgh[0][i];
+        }
+        getHitAnim = new Animation<TextureRegion>(0.1f,getHitFrames);
         stateTime = 0f;
 
 
@@ -86,6 +99,7 @@ public class Player {
         TextureRegion frame = walkAnim.getKeyFrame(stateTime, true);
         TextureRegion jumpFrame = jumpAnim.getKeyFrame(stateTime, false);
         TextureRegion hitFrame = hitAnim.getKeyFrame(stateTime,true);
+        TextureRegion gethitFrame= getHitAnim.getKeyFrame(stateTime,false);
 
         if(isHit){
             frame=hitAnim.getKeyFrame(stateTime,true);;
@@ -100,22 +114,30 @@ public class Player {
                 isJump = false; // Reset status lompat
                 stateTime = 0f;  // Reset animasi agar jalan dimulai dari awal
             }
-        } else {
+        }
+        else if (isGettingHit) {
+            frame=gethitFrame;
+            float alpha = 0.5f + 0.5f * (float)Math.sin(10 * stateTime); // alpha bolak-balik dari 0 ke 1
+            batch.setColor(1, 1, 1, alpha);
+            if (getHitAnim.isAnimationFinished(stateTime)){
+                isGettingHit=false;
+            };
+
+
+        }
+        else {
             frame = walkAnim.getKeyFrame(stateTime, true);
         }
+
         TextureRegion frame_new = new TextureRegion(frame);
         if (!hadapkanan) {
             frame_new.flip(true, false);
         }
-        if (isInvincible()) {
-            float alpha = 0.5f + 0.5f * (float)Math.sin(10 * stateTime); // alpha bolak-balik dari 0 ke 1
-            batch.setColor(1, 1, 1, alpha);
-        } else {
-            batch.setColor(1, 1, 1, 1f);
-        }
 
         batch.draw(frame_new, x, y);
         batch.setColor(1, 1, 1, 1f);
+
+
 
     }
     public void update(float delta){
@@ -123,7 +145,7 @@ public class Player {
         if (invincibilityTime > 0f)
             invincibilityTime -= delta;
     //cek lagi gerak atau ga//logic jalan
-        if (isMoving || isJump || isHit) {
+        if (isMoving || isJump || isHit || isGettingHit) {
             stateTime += delta;
         } else {
             stateTime = 0; // kembali ke frame pertama saat diam
@@ -185,13 +207,15 @@ public class Player {
 
     public void getHitFromEnemy(BaseEnemies enemy) {
         if (!isInvincible()) {
-            System.out.println("Player kena hit oleh musuh dengan damage: " + enemy.damage);
+
             playerHP -= enemy.damage;
             invincibilityTime = 1.0f; // 1 detik nggak bisa kena hit lagi
+            isGettingHit = true;
             System.out.println("Player kena hit! Sisa HP: " + playerHP);
             if (x > enemy.x) {velocityX = knockbackPower; }  // dorong ke kanan
             else {velocityX = -knockbackPower;}
             isKnockedback=true;
+            stateTime = 0f;
 
 
         }
@@ -207,6 +231,7 @@ public class Player {
         walk.dispose();
         jump.dispose();
         hit.dispose();
+        gethit.dispose();
     }
 }
 

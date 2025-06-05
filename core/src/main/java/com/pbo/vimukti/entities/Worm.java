@@ -15,6 +15,7 @@ public class Worm extends BaseEnemies {
     private float attackCooldown = 0f;
     private final float attackDelay = 1.5f; // musuh bisa mukul tiap 1.5 detik
     private boolean isAttacking = false;
+    private boolean hashit=false;
 
 
 
@@ -45,13 +46,17 @@ public class Worm extends BaseEnemies {
     TextureRegion[] deadFrames;
     Animation<TextureRegion> deadAnim;
 
-    //serang
+    //diserang
     Texture gethit;
     TextureRegion[] gethitFrames;
     Animation<TextureRegion> gethitAnim;
+    //serang
+    Texture attack;
+    TextureRegion[] attackFrames;
+    Animation<TextureRegion> attackAnim;
 
     public Worm() {
-        hp=200;
+        hp=1000;
         damage=100;
         x = 100;
         y = 100;
@@ -82,6 +87,14 @@ public class Worm extends BaseEnemies {
             deadFrames[i] = tmpd[0][i];
         }
         deadAnim = new Animation<TextureRegion>(0.1f,deadFrames);
+        //set animasi attack
+        attack = new Texture("Worm/Attack.png");
+        TextureRegion[][] tmpat = TextureRegion.split(attack,90,64);
+        attackFrames=new TextureRegion[8];
+        for (int i = 0; i < 8; i++) {
+            attackFrames[i] = tmpat[0][i+8];
+        }
+        attackAnim= new Animation<TextureRegion>(0.1f,attackFrames);
 
     }
     public float getSpeed() {
@@ -99,6 +112,9 @@ public class Worm extends BaseEnemies {
 
         else if(getHit){
             frame=gethitFrame;
+        }
+        else if (isAttacking) {
+            frame = attackAnim.getKeyFrame(stateTime, false);
         }
         else {
 
@@ -153,20 +169,34 @@ public class Worm extends BaseEnemies {
         //nyerang
         // Jarak serang
         float distanceToPlayer = Math.abs(player_x - x);
-        if (distanceToPlayer < 60f && attackCooldown <= 0f && isalive) {
+        if (distanceToPlayer < 30f && attackCooldown <= 0f && isalive && !isAttacking) {
             isAttacking = true;
-            attackCooldown = attackDelay;
+            hashit=false;
+            stateTime=0f;
             // Serang player (nanti manggil method player.getHitFromEnemy() dari luar)
-        } else {
-            isAttacking = false;
         }
-
+        if(isAttacking){
+            stateTime+=delta;
+            if (getHit && attackAnim.getKeyFrameIndex(stateTime) < 6) {
+                // Batalkan animasi serang
+                isAttacking = false;
+                hashit = false;
+                stateTime = 0;
+                attackCooldown = attackDelay;
+                System.out.println("anjay nangkis");
+                return;
+            }
+            if (attackAnim.getKeyFrameIndex(stateTime)==4 ){
+                hashit=true;
+            }
+            if(attackAnim.isAnimationFinished(stateTime)){
+                isAttacking=false;
+                hashit=false;
+                attackCooldown = attackDelay;
+                stateTime=0f;
+            }
+        }
         attackCooldown -= delta;
-
-
-
-
-
 
     }
     public void move(float dx, float dy) {
@@ -179,6 +209,7 @@ public class Worm extends BaseEnemies {
     public void gethit(float player_x){
         if (hitCooldown > 0 || !isalive) return;
         getHit=true;
+        isAttacking=false;
         hp -=50;
         System.out.println("HP"+hp);
         if (hp<=0){
@@ -189,6 +220,8 @@ public class Worm extends BaseEnemies {
         isKnockedback = true;
         stateTime = 0f;
         hitCooldown = invincibilityDuration;
+        hashit = false;
+        stateTime = 0f;
 //        System.out.println("Knockback velocityX: " + velocityX);
 
 
@@ -198,6 +231,15 @@ public class Worm extends BaseEnemies {
     }
     public boolean isAttacking() {
         return isAttacking;
+    }
+    public boolean isHashit(){
+        return hashit;
+    }
+    public void setishit(boolean value){
+        ishit=value;
+    }
+    public float getStateTime(){
+        return stateTime;
     }
     public boolean isDeadFinished() {
         return isDeadFinished;
@@ -213,6 +255,7 @@ public class Worm extends BaseEnemies {
         walk.dispose();
         gethit.dispose();
         dead.dispose();
+        attack.dispose();
     }
 }
 
