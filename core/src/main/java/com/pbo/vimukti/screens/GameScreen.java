@@ -6,12 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
 import com.pbo.vimukti.MainGame;
 import com.badlogic.gdx.graphics.Texture;
-import com.pbo.vimukti.entities.Golem;
-import com.pbo.vimukti.entities.Player;
-import com.pbo.vimukti.entities.BaseEnemies;
+import com.pbo.vimukti.entities.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import com.pbo.vimukti.entities.Worm;
 import com.pbo.vimukti.input.InputManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -31,6 +28,7 @@ public class GameScreen implements Screen {
         this.batch=game.batch;
         enemies.add(new Worm());
         enemies.add(new Golem());
+        enemies.add(new Mushroom());
     }
     @Override
     public void show(){

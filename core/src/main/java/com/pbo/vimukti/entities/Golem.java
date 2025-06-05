@@ -64,7 +64,7 @@ public class Golem extends BaseEnemies {
         damage=300;
         x = 150;
         y = 100;
-        speed=50f;
+        speed=30f;
         //set animasi jalan
         walk = new Texture("Golem/Golem_1_walk.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 90, 64);
