@@ -1,11 +1,9 @@
 package com.pbo.vimukti.entities;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.pbo.vimukti.ui.EnemyHealthBar;
 
 public abstract  class BaseEnemies {
     protected float speed;
@@ -13,6 +11,7 @@ public abstract  class BaseEnemies {
     protected float hp;
     protected boolean isAlive = true;
     protected float damage;
+    protected EnemyHealthBar healthBar;
 
     public abstract void update(float delta, float playerX);
     public abstract void render(SpriteBatch batch);
@@ -25,4 +24,19 @@ public abstract  class BaseEnemies {
     public abstract void setishit(boolean value);
     public abstract float getStateTime();
     public abstract void debugdraw(ShapeRenderer shapeRenderer);
+    
+    
+    public float getHP() { return hp; }
+    public abstract float getMaxHP();
+    public abstract float getSpriteWidth();
+    public abstract float getSpriteHeight();
+    
+    
+    public abstract float getSpriteLeftX();
+    
+    public void renderHealthBar(SpriteBatch batch) {
+        if (healthBar != null) {
+            healthBar.render(batch, hp, getSpriteLeftX(), y, getSpriteWidth(), getSpriteHeight());
+        }
+    }
 }

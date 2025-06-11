@@ -4,13 +4,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.pbo.vimukti.MainGame;
 import com.badlogic.gdx.graphics.Texture;
 import com.pbo.vimukti.entities.*;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import com.pbo.vimukti.input.InputManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.pbo.vimukti.ui.HealthBar;
 
 public class GameScreen implements Screen {
     Array<BaseEnemies> enemies = new Array<>();
@@ -19,6 +20,7 @@ public class GameScreen implements Screen {
     private Player player;
     private InputManager input ;
     private SpriteBatch batch;
+    private HealthBar healthBar;
 
 
     public GameScreen(MainGame game) {
@@ -29,13 +31,33 @@ public class GameScreen implements Screen {
         enemies.add(new Worm());
         enemies.add(new Golem());
         enemies.add(new Mushroom());
+        
+        
+        this.healthBar = new HealthBar(20, 430, 200, 25, 200); 
     }
     @Override
     public void show(){
         tes = new Texture("tes.png");
+        
+        
+        
+        
+        Gdx.input.setInputProcessor(null);
     }
     @Override
     public void render(float delta) {
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            game.setScreen(new PauseScreen(game, this));
+            return;
+        }
+        
+        
+        if (player.getPlayerHP() <= 0) {
+            game.setScreen(new GameOverScreen(game));
+            return;
+        }
+        
         update(delta);
         draw();
     }
@@ -53,19 +75,29 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        player.render(batch); // gambar player
+        player.render(batch); 
         for(BaseEnemies enemy:enemies) {
             enemy.render(batch);
         }
+        
+        
+        healthBar.render(batch, player.getPlayerHP());
+        
+        
+        for(BaseEnemies enemy:enemies) {
+            enemy.renderHealthBar(batch);
+        }
+        
         batch.end();
-//        for(BaseEnemies enemy:enemies){
-//            enemy.debugdraw(new ShapeRenderer());
-//        }
+        
+
+
+
     }
     public void battlehandler(Player player ,Array<BaseEnemies> enemies){
         for (BaseEnemies enemy : enemies){
             if (player.getBounds().overlaps(enemy.getBounds())) {
-            // kalau player sedang menyerang dan nabrak musuh
+            
                 if (player.isHitting()) {
                 enemy.gethit(player.x);
             }
@@ -79,7 +111,7 @@ public class GameScreen implements Screen {
             }
     }
 }
-    // Sisanya override kosong dulu
+    
     public void resize(int w, int h) {}
     public void hide() {}
     public void pause() {}
@@ -90,5 +122,6 @@ public class GameScreen implements Screen {
         for (BaseEnemies enemy :enemies){
             enemy.dispose();
         }
+        healthBar.dispose();
     }
 }

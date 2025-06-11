@@ -7,53 +7,54 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.pbo.vimukti.ui.EnemyHealthBar;
 
 public class Golem extends BaseEnemies {
-    //frame
+    
     public float scale;
-    //atribut
+    
     boolean ishit= false;
     boolean isalive=true;
     private boolean isDeadFinished = false;
     private float attackCooldown = 0f;
-    private final float attackDelay = 1.5f; // musuh bisa mukul tiap 1.5 detik
+    private final float attackDelay = 1.5f; 
     private boolean isAttacking = false;
     private boolean hashit=false;
 
 
 
-    //kedaan/status game/frame
+    
 
     float stateTime;
     private float gravity = 1000f;
-    private final float groundY = 100f; // posisi tanah (bisa disesuaikan)
+    private final float groundY = 100f; 
     private float velocityY = 0;
-    //keadaan/status entities
+    
     private boolean onGround = true;
     private boolean isMoving=false;
     private boolean hadapkanan=true;
     private boolean getHit = false;
     private float hitCooldown = 0f;
     private final float invincibilityDuration = 1.0f;
-    //animasi
-    //jalan
+    
+    
     Texture walk;
     TextureRegion[] walkFrames;
     Animation<TextureRegion> walkAnim;
-    //knockback
+    
     float velocityX = 0;
     float knockbackPower = 500f;
     boolean isKnockedback = false;
-    //mati
+    
     Texture dead;
     TextureRegion[] deadFrames;
     Animation<TextureRegion> deadAnim;
 
-    //diserang
+    
     Texture gethit;
     TextureRegion[] gethitFrames;
     Animation<TextureRegion> gethitAnim;
-    //serang
+    
     Texture attack;
     TextureRegion[] attackFrames;
     Animation<TextureRegion> attackAnim;
@@ -61,11 +62,15 @@ public class Golem extends BaseEnemies {
     public Golem() {
         scale=3.0f;
         hp=300;
-        damage=300;
+        damage=30;
         x = 150;
         y = 100;
         speed=30f;
-        //set animasi jalan
+        
+        
+        healthBar = new EnemyHealthBar(60, 8, hp); 
+        
+        
         walk = new Texture("Golem/Golem_1_walk.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 90, 64);
         walkFrames = new TextureRegion[10];
@@ -74,7 +79,7 @@ public class Golem extends BaseEnemies {
         }
         walkAnim = new Animation<TextureRegion>(0.1f, walkFrames);
 
-        //set animasi hit
+        
         gethit = new Texture("Golem/Golem_1_hurt.png");
         TextureRegion[][] tmpg = TextureRegion.split(gethit,90,64);
         gethitFrames=new TextureRegion[4];
@@ -83,7 +88,7 @@ public class Golem extends BaseEnemies {
         }
         gethitAnim = new Animation<TextureRegion>(0.15f,gethitFrames);
 
-        //set animasi dead
+        
         dead = new Texture("Golem/Golem_1_die.png");
         TextureRegion[][] tmpd = TextureRegion.split(dead,90,64);
         deadFrames=new TextureRegion[12];
@@ -91,7 +96,7 @@ public class Golem extends BaseEnemies {
             deadFrames[i] = tmpd[0][i];
         }
         deadAnim = new Animation<TextureRegion>(0.1f,deadFrames);
-        //set animasi attack
+        
         attack = new Texture("Golem/Golem_1_attack.png");
         TextureRegion[][] tmpat = TextureRegion.split(attack,90,64);
         attackFrames=new TextureRegion[11];
@@ -138,7 +143,7 @@ public class Golem extends BaseEnemies {
         if(!isalive) {
             stateTime += delta;
             if (deadAnim.isAnimationFinished(stateTime)) {
-                isDeadFinished = true; // Flag jadi true kalau udah selesai
+                isDeadFinished = true; 
             }
             return;
         };
@@ -149,7 +154,7 @@ public class Golem extends BaseEnemies {
         if (isKnockedback) {
             x += velocityX * delta;
             velocityX *= 0.9f;
-            // stop knockback kalau sudah cukup lambat
+            
             if (Math.abs(velocityX) < 5f) {
                 velocityX = 0;
                 isKnockedback = false;}
@@ -168,25 +173,25 @@ public class Golem extends BaseEnemies {
             isMoving=true;
             hadapkanan=true;
         }
-        //cek lagi gerak atau ga//logic jalan
+        
         if (isMoving) {
             stateTime += delta;
         } else {
-            stateTime = 0; // kembali ke frame pertama saat diam
+            stateTime = 0; 
         }
-        //nyerang
-        // Jarak serang
+        
+        
         float distanceToPlayer = Math.abs(player_x - x);
         if (distanceToPlayer < 40f && attackCooldown <= 0f && isalive && !isAttacking) {
             isAttacking = true;
             hashit=false;
             stateTime=0f;
-            // Serang player (nanti manggil method player.getHitFromEnemy() dari luar)
+            
         }
         if(isAttacking){
             stateTime+=delta;
             if (getHit && attackAnim.getKeyFrameIndex(stateTime) < 7) {
-                // Batalkan animasi serang
+                
                 isAttacking = false;
                 hashit = false;
                 stateTime = 0;
@@ -223,21 +228,21 @@ public class Golem extends BaseEnemies {
         if (hp<=0){
             isalive=false;
         }
-        if (x > player_x) {velocityX = knockbackPower; }  // dorong ke kanan
-        else {velocityX = -knockbackPower;}              // dorong ke kiri
+        if (x > player_x) {velocityX = knockbackPower; }  
+        else {velocityX = -knockbackPower;}              
         isKnockedback = true;
         stateTime = 0f;
         hitCooldown = invincibilityDuration;
         hashit = false;
         stateTime = 0f;
-//        System.out.println("Knockback velocityX: " + velocityX);
+
 
 
     }
     public Rectangle getBounds() {
-        // offsetX itu jarak dari titik anchor tengah bawah ke posisi kiri bawah hitbox (dalam pixel sprite asli)
-        float hitboxOffsetX = (90/2f - 55/2f) * scale; // contoh, hitbox dibuat simetris di tengah sprite
-        float hitboxOffsetY = 0; // karena anchor di bawah, hitbox mulai dari y
+        
+        float hitboxOffsetX = (90/2f - 55/2f) * scale; 
+        float hitboxOffsetY = 0; 
 
         return new Rectangle(x - hitboxOffsetX, y + hitboxOffsetY, 35 * scale, 40 * scale);
     }
@@ -277,6 +282,31 @@ public class Golem extends BaseEnemies {
         gethit.dispose();
         dead.dispose();
         attack.dispose();
+        if (healthBar != null) {
+            healthBar.dispose();
+        }
+    }
+    
+    
+    @Override
+    public float getMaxHP() {
+        return 300f; 
+    }
+    
+    @Override
+    public float getSpriteWidth() {
+        return 35f * scale; 
+    }
+    
+    @Override
+    public float getSpriteHeight() {
+        return 40f * scale; 
+    }
+    
+    @Override
+    public float getSpriteLeftX() {
+        float hitboxOffsetX = (90/2f - 55/2f) * scale;
+        return x - hitboxOffsetX; 
     }
 }
 

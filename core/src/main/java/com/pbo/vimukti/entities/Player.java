@@ -8,19 +8,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Player {
-    //atribut dasar player
+    
     private float speed = 200f;
     public float x, y;
     private float jumpSpeed = 500f;
     float playerHP ;
     float invincibilityTime ;
     private  boolean isinvincible;
-    //kedaan/status game/frame
+    
     float stateTime;
     private float gravity = 1000f;
-    private final float groundY = 100f; // posisi tanah (bisa disesuaikan)
+    private final float groundY = 100f; 
     private float velocityY = 0;
-    //keadaan/status player
+    
     private boolean onGround = true;
     private boolean isMoving=false;
     private boolean isJump=false;
@@ -28,24 +28,24 @@ public class Player {
     private boolean isHit = false;
     public  boolean isKnockedback=false;
     private boolean isGettingHit = false;
-    //animasi
-        //jalan
+    
+        
     Texture walk;
     TextureRegion[] walkFrames;
     Animation<TextureRegion> walkAnim;
-        //lompat
+        
     Texture jump;
     TextureRegion[] jumpFrames;
     Animation<TextureRegion> jumpAnim;
-        //serang
+        
     Texture hit;
     TextureRegion[] hitFrames;
     Animation<TextureRegion> hitAnim;
-        //gethit
+        
     Texture gethit;
     TextureRegion[] getHitFrames;
     Animation<TextureRegion> getHitAnim;
-        // knockback
+        
     float velocityX = 0;
     float knockbackPower = 500f;
 
@@ -56,7 +56,7 @@ public class Player {
         isinvincible=false;
         x = 100;
         y = 100;
-        //set animasi jalan
+        
         walk = new Texture("run.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 64, 64);
         walkFrames = new TextureRegion[8];
@@ -64,7 +64,7 @@ public class Player {
             walkFrames[i] = tmpw[0][i];
         }
         walkAnim = new Animation<TextureRegion>(0.1f, walkFrames);
-        //set animasi lompat
+        
         jump = new Texture("jump.png");
         TextureRegion[][] tmpj = TextureRegion.split(jump, 64, 64);
         jumpFrames = new TextureRegion[8];
@@ -72,7 +72,7 @@ public class Player {
             jumpFrames[i] = tmpj[0][i];
         }
         jumpAnim = new Animation<TextureRegion>(0.1f, jumpFrames);
-        //set animasi hit
+        
         hit = new Texture("hit.png");
         TextureRegion[][] tmph = TextureRegion.split(hit,64,64);
         hitFrames=new TextureRegion[8];
@@ -80,7 +80,7 @@ public class Player {
             hitFrames[i] = tmph[0][i];
         }
         hitAnim = new Animation<TextureRegion>(0.03f,hitFrames);
-        //set animasi gethit
+        
         gethit = new Texture("Gethit.png");
         TextureRegion[][] tmpgh = TextureRegion.split(gethit,64,64);
         getHitFrames=new TextureRegion[6];
@@ -111,13 +111,13 @@ public class Player {
         else if (isJump) {
             frame = jumpFrame;
             if (jumpAnim.isAnimationFinished(stateTime) && onGround) {
-                isJump = false; // Reset status lompat
-                stateTime = 0f;  // Reset animasi agar jalan dimulai dari awal
+                isJump = false; 
+                stateTime = 0f;  
             }
         }
         else if (isGettingHit) {
             frame=gethitFrame;
-            float alpha = 0.5f + 0.5f * (float)Math.sin(10 * stateTime); // alpha bolak-balik dari 0 ke 1
+            float alpha = 0.5f + 0.5f * (float)Math.sin(10 * stateTime); 
             batch.setColor(1, 1, 1, alpha);
             if (getHitAnim.isAnimationFinished(stateTime)){
                 isGettingHit=false;
@@ -141,34 +141,34 @@ public class Player {
 
     }
     public void update(float delta){
-        //cek lagi immune setelah dibacok
+        
         if (invincibilityTime > 0f)
             invincibilityTime -= delta;
-    //cek lagi gerak atau ga//logic jalan
+    
         if (isMoving || isJump || isHit || isGettingHit) {
             stateTime += delta;
         } else {
-            stateTime = 0; // kembali ke frame pertama saat diam
+            stateTime = 0; 
         }
 
-    //logic lompat
-        // Gravitasi kalau tidak di tanah
+    
+        
         if (!onGround) {
             velocityY -= gravity * delta;
             y += velocityY * delta;
 
-            // Cek kalau kena tanah
+            
             if (y <= groundY) {
                 y = groundY;
                 onGround = true;
                 velocityY = 0;
             }
         }
-        //logic dibacok
+        
         if (isKnockedback) {
             x += velocityX * delta;
             velocityX *= 0.9f;
-            // stop knockback kalau sudah cukup lambat
+            
             if (Math.abs(velocityX) < 5f) {
                 velocityX = 0;
             }
@@ -209,10 +209,10 @@ public class Player {
         if (!isInvincible()) {
 
             playerHP -= enemy.damage;
-            invincibilityTime = 1.0f; // 1 detik nggak bisa kena hit lagi
+            invincibilityTime = 1.0f; 
             isGettingHit = true;
             System.out.println("Player kena hit! Sisa HP: " + playerHP);
-            if (x > enemy.x) {velocityX = knockbackPower; }  // dorong ke kanan
+            if (x > enemy.x) {velocityX = knockbackPower; }  
             else {velocityX = -knockbackPower;}
             isKnockedback=true;
             stateTime = 0f;
@@ -225,9 +225,11 @@ public class Player {
         return invincibilityTime>0f;
     }
 
+    public float getPlayerHP() {
+        return playerHP;
+    }
 
     public void dispose() {
-
         walk.dispose();
         jump.dispose();
         hit.dispose();
