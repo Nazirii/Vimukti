@@ -15,8 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.pbo.vimukti.MainGame;
+import com.pbo.vimukti.utils.GameConstants;
 
 public class PauseScreen implements Screen {
     private MainGame game;
@@ -42,8 +42,7 @@ public class PauseScreen implements Screen {
         
         
         pausedTexture = new Texture("PAUSED.png");
-        
-        stage = new Stage(new ScreenViewport());
+          stage = new Stage(game.viewport);
         Gdx.input.setInputProcessor(stage);
         
         
@@ -97,19 +96,20 @@ public class PauseScreen implements Screen {
         table.add(pauseImage).padBottom(50).row();
         table.add(resumeButton).padBottom(20).row();
         table.add(mainMenuButton).padBottom(20);
-    }
-
-    @Override
+    }    @Override
     public void render(float delta) {
         
         Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
+        // Apply viewport
+        game.viewport.apply();
+        game.batch.setProjectionMatrix(game.camera.combined);
         
         game.batch.begin();
         
         game.batch.setColor(0.7f, 0.7f, 0.7f, 1f);
-        game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.batch.draw(backgroundTexture, 0, 0, GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT);
         game.batch.setColor(1f, 1f, 1f, 1f); 
         game.batch.end();
         
@@ -120,12 +120,11 @@ public class PauseScreen implements Screen {
         
         stage.act(delta);
         stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
     }    @Override
+    public void resize(int width, int height) {
+        game.viewport.update(width, height);
+        stage.getViewport().update(width, height, true);
+    }@Override
     public void pause() {}
 
     @Override

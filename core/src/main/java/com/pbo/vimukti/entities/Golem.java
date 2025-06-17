@@ -60,11 +60,11 @@ public class Golem extends BaseEnemies {
     Animation<TextureRegion> attackAnim;
 
     public Golem() {
-        scale=3.0f;
+        scale=9.0f;
         hp=300;
-        damage=30;
-        x = 150;
-        y = 100;
+        damage=60;
+        x = 500;
+        y = 170;
         speed=30f;
         
         

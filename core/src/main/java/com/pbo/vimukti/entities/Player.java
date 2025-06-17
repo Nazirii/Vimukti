@@ -18,8 +18,9 @@ public class Player {
     
     float stateTime;
     private float gravity = 1000f;
-    private final float groundY = 100f; 
+    private final float groundY = 170f; 
     private float velocityY = 0;
+    private float scale = 2.0f; 
     
     private boolean onGround = true;
     private boolean isMoving=false;
@@ -54,8 +55,9 @@ public class Player {
         playerHP=200;
         invincibilityTime=0f;
         isinvincible=false;
+        scale = 2.0f;
         x = 100;
-        y = 100;
+        y = 170;
         
         walk = new Texture("run.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 64, 64);
@@ -134,7 +136,7 @@ public class Player {
             frame_new.flip(true, false);
         }
 
-        batch.draw(frame_new, x, y);
+        batch.draw(frame_new, x, y, frame_new.getRegionWidth() * scale, frame_new.getRegionHeight() * scale);
         batch.setColor(1, 1, 1, 1f);
 
 

@@ -14,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.pbo.vimukti.MainGame;
+import com.pbo.vimukti.utils.GameConstants;
 
 public class MenuScreen implements Screen {
     private MainGame game;
@@ -41,7 +41,7 @@ public class MenuScreen implements Screen {
         logoTexture = new Texture("logo.png");
         
         
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(game.viewport);
         Gdx.input.setInputProcessor(stage);
         
         
@@ -108,17 +108,21 @@ public class MenuScreen implements Screen {
             game.setScreen(new GameScreen(game)); 
         }
 
+        // Apply viewport
+        game.viewport.apply();
+        game.batch.setProjectionMatrix(game.camera.combined);
+
         game.batch.begin();
         
         
-        game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.batch.draw(backgroundTexture, 0, 0, GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT);
         
         
         float logoScale = 0.5f; 
         float logoWidth = logoTexture.getWidth() * logoScale;
         float logoHeight = logoTexture.getHeight() * logoScale;
-        float logoX = (Gdx.graphics.getWidth() - logoWidth) / 2;
-        float logoY = Gdx.graphics.getHeight() - logoHeight - 50;
+        float logoX = (GameConstants.GAME_WIDTH - logoWidth) / 2;
+        float logoY = GameConstants.GAME_HEIGHT - logoHeight - 50;
         game.batch.draw(logoTexture, logoX, logoY, logoWidth, logoHeight);
         
         game.batch.end();
@@ -129,7 +133,10 @@ public class MenuScreen implements Screen {
     }
     
     
-    public void resize(int w, int h) {}
+    public void resize(int w, int h) {
+        game.viewport.update(w, h);
+        stage.getViewport().update(w, h, true);
+    }
     public void hide() {}
     public void pause() {}
     public void resume() {}

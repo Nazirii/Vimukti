@@ -60,11 +60,11 @@ public class Mushroom extends BaseEnemies {
     Animation<TextureRegion> attackAnim;
 
     public Mushroom() {
-        scale=1.0f;
+        scale=2.0f;
         hp=300;
-        damage=0;
-        x = 150;
-        y = 100;
+        damage=20;
+        x = 500;
+        y = 170;
         speed=50f;
         
         

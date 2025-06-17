@@ -60,11 +60,11 @@ public class Worm extends BaseEnemies {
     Animation<TextureRegion> attackAnim;
 
     public Worm() {
-        scale=2.0f;
+        scale=3.0f;
         hp=150;
-        damage=0;
-        x = 100;
-        y = 100;
+        damage=40;
+        x = 500;
+        y = 170;
         speed=50f;
         
         
@@ -134,7 +134,10 @@ public class Worm extends BaseEnemies {
             frame_new.flip(true, false);
         }
 
-        batch.draw(frame_new, x, y);
+        
+        float drawX = x - (frame_new.getRegionWidth() * scale) / 2f;
+        float drawY = y;
+        batch.draw(frame_new, drawX, drawY, frame_new.getRegionWidth() * scale, frame_new.getRegionHeight() * scale);
 
     }
     public void update(float delta,float player_x){
@@ -290,17 +293,32 @@ public class Worm extends BaseEnemies {
     
     @Override
     public float getSpriteWidth() {
-        return 60f; 
+        return 90f * scale; 
     }
     
     @Override
     public float getSpriteHeight() {
-        return 40f; 
+        return 64f * scale; 
     }
     
     @Override
     public float getSpriteLeftX() {
-        return x; 
+        
+        return x - (90f * scale) / 2f;
+    }
+    
+    @Override
+    public void renderHealthBar(SpriteBatch batch) {
+        if (healthBar != null) {
+            
+            float customOffsetX = 20f; 
+            float customOffsetY = -50f; 
+            
+            float adjustedX = getSpriteLeftX() + customOffsetX;
+            float adjustedY = y + customOffsetY;
+            
+            healthBar.render(batch, hp, adjustedX, adjustedY, getSpriteWidth(), getSpriteHeight());
+        }
     }
 }
 
