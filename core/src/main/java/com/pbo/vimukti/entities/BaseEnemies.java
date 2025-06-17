@@ -24,16 +24,20 @@ public abstract  class BaseEnemies {
     public abstract void setishit(boolean value);
     public abstract float getStateTime();
     public abstract void debugdraw(ShapeRenderer shapeRenderer);
-    
-    
+
+
     public float getHP() { return hp; }
     public abstract float getMaxHP();
     public abstract float getSpriteWidth();
     public abstract float getSpriteHeight();
-    
-    
+
+    public boolean isDeadFinished() {
+        return false; // default untuk enemy yang belum override
+    }
+
+
     public abstract float getSpriteLeftX();
-    
+
     public void renderHealthBar(SpriteBatch batch) {
         if (healthBar != null) {
             healthBar.render(batch, hp, getSpriteLeftX(), y, getSpriteWidth(), getSpriteHeight());

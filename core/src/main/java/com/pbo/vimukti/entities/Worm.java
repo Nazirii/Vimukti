@@ -10,51 +10,51 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.pbo.vimukti.ui.EnemyHealthBar;
 
 public class Worm extends BaseEnemies {
-    
+
     public float scale;
-    
+
     boolean ishit= false;
     boolean isalive=true;
     private boolean isDeadFinished = false;
     private float attackCooldown = 0f;
-    private final float attackDelay = 1.5f; 
+    private final float attackDelay = 1.5f;
     private boolean isAttacking = false;
     private boolean hashit=false;
 
 
 
-    
+
 
     float stateTime;
     private float gravity = 1000f;
-    private final float groundY = 100f; 
+    private final float groundY = 100f;
     private float velocityY = 0;
-    
+
     private boolean onGround = true;
     private boolean isMoving=false;
     private boolean hadapkanan=true;
     private boolean getHit = false;
     private float hitCooldown = 0f;
     private final float invincibilityDuration = 1.0f;
-    
-    
+
+
     Texture walk;
     TextureRegion[] walkFrames;
     Animation<TextureRegion> walkAnim;
-    
+
     float velocityX = 0;
     float knockbackPower = 500f;
     boolean isKnockedback = false;
-    
+
     Texture dead;
     TextureRegion[] deadFrames;
     Animation<TextureRegion> deadAnim;
 
-    
+
     Texture gethit;
     TextureRegion[] gethitFrames;
     Animation<TextureRegion> gethitAnim;
-    
+
     Texture attack;
     TextureRegion[] attackFrames;
     Animation<TextureRegion> attackAnim;
@@ -64,13 +64,13 @@ public class Worm extends BaseEnemies {
         hp=150;
         damage=40;
         x = 500;
-        y = 170;
+        y = 150;
         speed=50f;
-        
-        
-        healthBar = new EnemyHealthBar(50, 6, hp); 
-        
-        
+
+
+        healthBar = new EnemyHealthBar(50, 6, hp);
+
+
         walk = new Texture("Worm/walk.png");
         TextureRegion[][] tmpw = TextureRegion.split(walk, 90, 64);
         walkFrames = new TextureRegion[8];
@@ -79,7 +79,7 @@ public class Worm extends BaseEnemies {
         }
         walkAnim = new Animation<TextureRegion>(0.1f, walkFrames);
 
-        
+
         gethit = new Texture("Worm/GetHit.png");
         TextureRegion[][] tmpg = TextureRegion.split(gethit,90,64);
         gethitFrames=new TextureRegion[3];
@@ -88,7 +88,7 @@ public class Worm extends BaseEnemies {
         }
         gethitAnim = new Animation<TextureRegion>(0.15f,gethitFrames);
 
-        
+
         dead = new Texture("Worm/Death.png");
         TextureRegion[][] tmpd = TextureRegion.split(dead,90,64);
         deadFrames=new TextureRegion[8];
@@ -96,7 +96,7 @@ public class Worm extends BaseEnemies {
             deadFrames[i] = tmpd[0][i];
         }
         deadAnim = new Animation<TextureRegion>(0.1f,deadFrames);
-        
+
         attack = new Texture("Worm/Attack.png");
         TextureRegion[][] tmpat = TextureRegion.split(attack,90,64);
         attackFrames=new TextureRegion[8];
@@ -134,7 +134,7 @@ public class Worm extends BaseEnemies {
             frame_new.flip(true, false);
         }
 
-        
+
         float drawX = x - (frame_new.getRegionWidth() * scale) / 2f;
         float drawY = y;
         batch.draw(frame_new, drawX, drawY, frame_new.getRegionWidth() * scale, frame_new.getRegionHeight() * scale);
@@ -144,7 +144,7 @@ public class Worm extends BaseEnemies {
         if(!isalive) {
             stateTime += delta;
             if (deadAnim.isAnimationFinished(stateTime)) {
-                isDeadFinished = true; 
+                isDeadFinished = true;
             }
             return;
         };
@@ -155,7 +155,7 @@ public class Worm extends BaseEnemies {
         if (isKnockedback) {
             x += velocityX * delta;
             velocityX *= 0.9f;
-            
+
             if (Math.abs(velocityX) < 5f) {
                 velocityX = 0;
                 isKnockedback = false;}
@@ -174,25 +174,25 @@ public class Worm extends BaseEnemies {
             isMoving=true;
             hadapkanan=true;
         }
-        
+
         if (isMoving) {
             stateTime += delta;
         } else {
-            stateTime = 0; 
+            stateTime = 0;
         }
-        
-        
+
+
         float distanceToPlayer = Math.abs(player_x - x);
         if (distanceToPlayer < 30f && attackCooldown <= 0f && isalive && !isAttacking) {
             isAttacking = true;
             hashit=false;
             stateTime=0f;
-            
+
         }
         if(isAttacking){
             stateTime+=delta;
             if (getHit && attackAnim.getKeyFrameIndex(stateTime) < 6) {
-                
+
                 isAttacking = false;
                 hashit = false;
                 stateTime = 0;
@@ -229,8 +229,8 @@ public class Worm extends BaseEnemies {
         if (hp<=0){
             isalive=false;
         }
-        if (x > player_x) {velocityX = knockbackPower; }  
-        else {velocityX = -knockbackPower;}              
+        if (x > player_x) {velocityX = knockbackPower; }
+        else {velocityX = -knockbackPower;}
         isKnockedback = true;
         stateTime = 0f;
         hitCooldown = invincibilityDuration;
@@ -284,39 +284,39 @@ public class Worm extends BaseEnemies {
             healthBar.dispose();
         }
     }
-    
-    
+
+
     @Override
     public float getMaxHP() {
-        return 150f; 
+        return 150f;
     }
-    
+
     @Override
     public float getSpriteWidth() {
-        return 90f * scale; 
+        return 90f * scale;
     }
-    
+
     @Override
     public float getSpriteHeight() {
-        return 64f * scale; 
+        return 64f * scale;
     }
-    
+
     @Override
     public float getSpriteLeftX() {
-        
+
         return x - (90f * scale) / 2f;
     }
-    
+
     @Override
     public void renderHealthBar(SpriteBatch batch) {
         if (healthBar != null) {
-            
-            float customOffsetX = 20f; 
-            float customOffsetY = -50f; 
-            
+
+            float customOffsetX = 20f;
+            float customOffsetY = -50f;
+
             float adjustedX = getSpriteLeftX() + customOffsetX;
             float adjustedY = y + customOffsetY;
-            
+
             healthBar.render(batch, hp, adjustedX, adjustedY, getSpriteWidth(), getSpriteHeight());
         }
     }
